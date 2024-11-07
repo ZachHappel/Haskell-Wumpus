@@ -2,16 +2,25 @@ module Types where
 
 data Room = Int
 
-newtype Routes = Routes [Int]
+type Cave = [(Room, [Room])]
 
-type Position = (Room, Routes)
+data Entity = Player | Wumpus | Bat | Pit
 
--- type Player = Action
+data State = State
+  { playerPosition :: Room,
+    wumpusPosition :: Room,
+    batPosition :: Room,
+    pitPosition :: Room,
+    cavePosition :: Room
+  }
 
--- data Action = Maybe (Sense)
+data Sense = Touch | Hear | Smell
 
--- data Sense = Touch | Hear | Smell
+data Action = Move Room | Shoot Room | Sense Room
 
+data Result = Alive | WumpusKilled | EatenByWumpus | FellIntoPit | CaughtByBat
+
+-- Map Layout:
 -- Position (1, Routes [2, 5, 8])
 -- Position (2, Routes [1, 3, 10])
 -- Position (3, Routes [2, 4, 12])

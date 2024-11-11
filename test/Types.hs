@@ -1,6 +1,7 @@
 module Types
   ( GameState (..),
     RoomState (..),
+    PlayerState (..),
   )
 where
 
@@ -25,13 +26,18 @@ data GameState = GameState
     wumpusPosition :: Position,
     batPosition :: Position,
     pitPosition :: Position,
-    lastPosition :: Position,
-    arrowCount :: Int
+    lastPosition :: Position
   }
 
 data RoomState = RoomState
   { event :: Entity,
     sense :: Sense
+  }
+
+data PlayerState = PlaterState
+  { arrowCount :: Int,
+    status :: Bool,
+    location :: Position
   }
 
 -- Map Layout:

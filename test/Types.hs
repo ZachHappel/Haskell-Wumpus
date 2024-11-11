@@ -36,8 +36,7 @@ data RoomState = RoomState
 
 data PlayerState = PlaterState
   { arrowCount :: Int,
-    status :: Bool,
-    location :: Position
+    status :: Bool
   }
 
 -- Map Layout:

@@ -1,24 +1,38 @@
-module Types where
+module Types
+  ( GameState (..),
+    RoomState (..),
+  )
+where
 
 data Room = Int
+
+type Position = Room
+
+data Sense = Hear | Smell | Feel
 
 type Cave = [(Room, [Room])]
 
 data Entity = Player | Wumpus | Bat | Pit
 
-data State = State
-  { playerPosition :: Room,
-    wumpusPosition :: Room,
-    batPosition :: Room,
-    pitPosition :: Room,
-    cavePosition :: Room
-  }
+data Move = Left | Back | Right
 
-data Sense = Touch | Hear | Smell
-
-data Action = Move Room | Shoot Room | Sense Room
+data Action = Move Room | Shoot [Room] | Sense Room
 
 data Result = Alive | WumpusKilled | EatenByWumpus | FellIntoPit | CaughtByBat
+
+data GameState = GameState
+  { playerPosition :: Position,
+    wumpusPosition :: Position,
+    batPosition :: Position,
+    pitPosition :: Position,
+    lastPosition :: Position,
+    arrowCount :: Int
+  }
+
+data RoomState = RoomState
+  { event :: Entity,
+    sense :: Sense
+  }
 
 -- Map Layout:
 -- Position (1, Routes [2, 5, 8])

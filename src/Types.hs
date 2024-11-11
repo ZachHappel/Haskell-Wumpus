@@ -1,5 +1,5 @@
 type Arrows = Int
-
+type Position = Int
 type RoomNumber = Int
 type AdjacentRooms = [RoomNumber]
 
@@ -9,6 +9,15 @@ data Room = Room {
     roomNumber :: Int,
     adjacentRooms :: [Int]
 }
+
+data GameState = GameSate {
+    playerPos :: Position,
+    wumpusPos :: Position,
+    lastPos :: Position,
+    cavePos :: Position,
+    arrowCount :: Int
+}
+
 
 
 data Player = Player Arrows RoomNumber

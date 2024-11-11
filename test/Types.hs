@@ -2,16 +2,20 @@ module Types
   ( GameState (..),
     RoomState (..),
     PlayerState (..),
+    Action (..),
+    Result (..),
   )
 where
 
 data Room = Int
 
+type Neighbors = [Room]
+
 type Position = Room
 
 data Sense = Hear | Smell | Feel
 
-type Cave = [(Room, [Room])]
+type Cave = [(Room, Neighbors)]
 
 data Entity = Player | Wumpus | Bat | Pit
 

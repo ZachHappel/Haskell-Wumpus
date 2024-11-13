@@ -1,6 +1,7 @@
-module Types where 
+module Types where
 
 type Position = Int
+
 -- if move is an enum then it forces the game to have
 --    # of enums amount of connections per cave
 --    a more generic way of representing moves could be
@@ -10,25 +11,30 @@ type Position = Int
 --    if orientated correctly
 data Move = Left | Right | Back
 
-data PlayerState = Player {
-    playerPosition    :: Position,
+data PlayerState = Player
+  { playerPosition :: Position,
     -- will have to be set to the correct position on game start
     --    to orientate player
-    lastPostion       :: Position,
-    playerArrowCount  :: Int
-}
+    lastPostion :: Position,
+    playerArrowCount :: Int
+  }
 
-data EntityState = EntityState {
-    batPositions       :: [Position],
-    pitPositions       :: [Position],
-    wumpusPosition     :: Position
-}
+data WumpusState = WumpusState
+  { wumpusPosition :: Position
+  }
+
+data EnvironmentState = EnvironmentState
+  { hazards :: [(Position, Hazard)]
+  }
+
+data Hazard = Bats | Pit
 
 type CaveLayout = [(Position, [Position])]
+
 -- Map Layout:
 decahedron :: CaveLayout
-decahedron = [
-    (1, [2, 5, 8]),
+decahedron =
+  [ (1, [2, 5, 8]),
     (2, [1, 3, 10]),
     (3, [2, 4, 12]),
     (4, [3, 5, 14]),
@@ -48,7 +54,7 @@ decahedron = [
     (18, [9, 17, 19]),
     (19, [11, 18, 20]),
     (20, [13, 16, 19])
-    ]
+  ]
 
 -- CaveLayout -> Current Position -> Last Position -> Move -> Position
 move :: CaveLayout -> Position -> Position -> Move -> Position

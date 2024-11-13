@@ -66,3 +66,5 @@ move :: CaveLayout -> Position -> Position -> Move -> Position
 -- Move Left -> move left of 2 (cyclically if out of bounds) return 8
 -- Move Right -> move right of 2 return 5
 move _ _ _ = undefined
+
+type MoveInMap = Position -> Position -> Move -> Position

@@ -2,8 +2,9 @@ module Types where
 
 --data synonyms
 type ArrowCount = Int
-type Position = Int
+type RoomNumber = Int
 type Alive = Bool
+type AdjacentRooms = [RoomNumber] --added to keep track of rooms
 
 
 
@@ -15,13 +16,16 @@ data GameObject = Wumpus | Bats | Pit
 data Room = Room{
     roomEvent :: GameObject
     roomSense :: Sense
+    roomsNear :: AdjacentRooms
+
     -- need to keep track of the orientation of the other rooms
 }
 
 data Player = Player{
     status :: Alive
     arrowInventory :: ArrowCount
-    playerLocation :: Position
+    playerLocation :: RoomNumber
+    
 }
 
 {- Actions:

@@ -1,3 +1,9 @@
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.swp
+
 dist
 dist-*
 cabal-dev

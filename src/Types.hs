@@ -1,6 +1,6 @@
 module Types where
 
-type Position = Int
+type Position = Int 
 type Previous = Position
 type Current = Position
 
@@ -11,7 +11,7 @@ type Current = Position
 --    or move names which are incorrect (e.i. moving left when in that postion you can only move right)
 -- For a decahedron it Left Right Back make sense for every move as you will always have those options
 --    if orientated correctly
-data Move = Left | Right | Back
+data Move = Left | Right | Back deriving (Show)
 
 data PlayerState = Player
   { playerPosition :: Position,
@@ -19,19 +19,28 @@ data PlayerState = Player
     --    to orientate player
     lastPostion :: Position,
     playerArrowCount :: Int
-  }
+  } deriving (Show)
 
 data WumpusState = WumpusState
   { wumpusPosition :: Position
-  }
+  } deriving (Show)
 
 data EnvironmentState = EnvironmentState
   { hazards :: [(Position, Hazard)]
-  }
+  } deriving (Show)
 
-data Hazard = Bats | Pit
 
-type CaveLayout = [(Position, [Position])]
+data GameState = GameState
+  { playerState :: PlayerState,
+    wumpusState :: WumpusState,
+    environment :: EnvironmentState,
+    layout      :: CaveLayout
+  } deriving (Show)
+
+
+data Hazard = Bats | Pit deriving (Show)
+
+type CaveLayout = [(Position, [Position])] 
 
 -- Map Layout:
 decahedron :: CaveLayout
@@ -57,6 +66,32 @@ decahedron =
     (19, [11, 18, 20, 11, 18, 20]),
     (20, [13, 16, 19, 13, 16, 19])
   ]
+
+
+
+getNeighbors :: Position -> CaveLayout -> [Position]
+getNeighbors current_position l = head [neighbors | (pos, neighbors) <- l, pos == current_position]
+
+findIndexOf :: Eq a => a -> [a] -> Position
+findIndexOf x xs = go xs 0
+  where
+    go [] _ = error "Not found"
+    go (y:ys) i
+      | x == y  = i
+      | otherwise = go ys (i + 1)
+
+
+
+-- e.g., getThreeIndicesStartingAtIndex 2 [2,5,8,2,5,8] => [8, 2, 5]
+getThreeIndicesStartingAtIndex :: Int -> [Position] -> [Position]
+getThreeIndicesStartingAtIndex index list = take 3 (drop index list) 
+
+getOrientationAdjustedNeighbors :: Current -> Previous -> CaveLayout -> [Position] 
+getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex (findIndexOf prev (getNeighbors current l)) (getNeighbors current l)
+
+-- takes index of the first occurrence of the player's "last position"
+-- returns three indices with the last position being the first, followed by the right and the left
+-- it does this by dropping up until the index of the first occurrence and returns the three init indices
 
 
 {-
@@ -90,27 +125,3 @@ move layout current last direction =
        Right -> neighbors !! 1  -- Where secon elem is right
        Forward -> neighbors !! 2 -- Where third elem is forward
 -}
-
-getNeighbors :: Position -> CaveLayout -> [Position]
-getNeighbors current_position layout = head [neighbors | (pos, neighbors) <- layout, pos == current_position]
-
-findIndexOf :: Eq a => a -> [a] -> Position
-findIndexOf x xs = go xs 0
-  where
-    go [] _ = error "Not found"
-    go (y:ys) i
-      | x == y  = i
-      | otherwise = go ys (i + 1)
-
-
-
--- e.g., getThreeIndicesStartingAtIndex 2 [2,5,8,2,5,8] => [8, 2, 5]
-getThreeIndicesStartingAtIndex :: Int -> [Position] -> [Position]
-getThreeIndicesStartingAtIndex index list = take 3 (drop index list) 
-
-getOrientationAdjustedNeighbors :: Current -> Previous -> CaveLayout -> [Position] 
-getOrientationAdjustedNeighbors current prev layout = getThreeIndicesStartingAtIndex (findIndexOf prev (getNeighbors current layout)) (getNeighbors current layout)
-
--- takes index of the first occurrence of the player's "last position"
--- returns three indices with the last position being the first, followed by the right and the left
--- it does this by dropping up until the index of the first occurrence and returns the three init indices

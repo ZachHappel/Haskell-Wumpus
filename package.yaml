@@ -21,7 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/Tien
 
 dependencies:
 - base >= 4.7 && < 5
-- mtl >= 2.3.1
+- mtl >= 2.2.2
 - random >= 1.2
 
 ghc-options:

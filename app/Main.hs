@@ -22,6 +22,7 @@ main = do
 gameLoop :: GameState -> IO ()
 gameLoop game = do
     -- game is passed into the function as an argument
+  putStrLn caveArt
   print $ "Current Player State: " ++ show (playerState game)
   putStrLn "Enter your move (Left, Right, Back):"
   move <- getLine

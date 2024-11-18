@@ -35,7 +35,9 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      base >=4.8 && <5
+    , mtl ==2.2.*
+    , random >=1.2.1
   default-language: Haskell2010
 
 executable wumpus-exe
@@ -48,7 +50,9 @@ executable wumpus-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      base >=4.8 && <5
+    , mtl ==2.2.*
+    , random >=1.2.1
     , wumpus
   default-language: Haskell2010
 
@@ -63,6 +67,8 @@ test-suite wumpus-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      base >=4.8 && <5
+    , mtl ==2.2.*
+    , random >=1.2.1
     , wumpus
   default-language: Haskell2010

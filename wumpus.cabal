@@ -25,6 +25,8 @@ source-repository head
 
 library
   exposed-modules:
+      GameLogic
+      IO
       Lib
       Types
   other-modules:

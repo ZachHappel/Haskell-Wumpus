@@ -1,4 +1,5 @@
 import System.Random ()
+import Data.List (lookup)
 import Types
 
 someFunc :: IO ()

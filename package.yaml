@@ -20,8 +20,15 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/Tientuine/wumpus#readme>
 
 dependencies:
+<<<<<<< HEAD
 - base >= 4.7 && < 5
 - mtl >= 2.2 && < 2.3
+=======
+- base >= 4.8 && < 5
+- mtl >= 2.2 && < 2.3
+- random >= 1.2.1
+- random-shuffle >= 0.0.4
+>>>>>>> main
 
 ghc-options:
 - -Wall

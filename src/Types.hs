@@ -16,7 +16,8 @@ data PlayerState = Player
     -- will have to be set to the correct position on game start
     --    to orientate player
     lastPostion :: Position,
-    playerArrowCount :: Int
+    playerArrowCount :: Int,
+    playerHasShot :: Boolean
   }
 
 data WumpusState = WumpusState

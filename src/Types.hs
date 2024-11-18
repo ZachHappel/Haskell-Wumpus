@@ -11,6 +11,15 @@ type Position = Int
 --    if orientated correctly
 data Move = Left | Right | Back
 
+data GameState = GameState
+  {
+    playerPosition :: Position,
+    lastPostion :: Position,
+    playerArrowCount :: Int
+    wumpusPosition :: Position
+    hazards :: [(Position, Hazard)]
+  }
+
 data PlayerState = Player
   { playerPosition :: Position,
     -- will have to be set to the correct position on game start
@@ -34,25 +43,25 @@ type CaveLayout = [(Position, [Position])]
 -- Map Layout:
 decahedron :: CaveLayout
 decahedron =
-  [ (1, [2, 5, 8]),
-    (2, [1, 3, 10]),
-    (3, [2, 4, 12]),
-    (4, [3, 5, 14]),
-    (5, [1, 4, 6]),
+  [ (1, [2, 8, 5]),
+    (2, [3, 10, 1]),
+    (3, [4, 12, 2]),
+    (4, [5, 14, 3]),
+    (5, [1, 6, 4]),
     (6, [5, 7, 15]),
     (7, [6, 8, 17]),
-    (8, [1, 7, 9]),
+    (8, [1, 9, 7]),
     (9, [8, 10, 18]),
-    (10, [2, 9, 11]),
-    (11, [10, 12, 20]),
-    (12, [3, 11, 13]),
+    (10, [9, 2, 11]),
+    (11, [10, 12, 19]),
+    (12, [11, 3, 13]),
     (13, [12, 14, 20]),
-    (14, [4, 13, 15]),
-    (15, [6, 14, 16]),
+    (14, [13, 4, 15]),
+    (15, [6, 16, 14]),
     (16, [15, 17, 20]),
-    (17, [7, 16, 18]),
-    (18, [9, 17, 19]),
-    (19, [11, 18, 20]),
+    (17, [16, 7, 18]),
+    (18, [17, 9, 19]),
+    (19, [18, 11, 20]),
     (20, [13, 16, 19])
   ]
 
@@ -65,4 +74,8 @@ move :: CaveLayout -> Position -> Position -> Move -> Position
 -- Move Back -> obivously return 2
 -- Move Left -> move left of 2 (cyclically if out of bounds) return 8
 -- Move Right -> move right of 2 return 5
-move _ _ _ = undefined
+move layout currPos lastPos dir = 
+  case dir of
+    Left -> undefined
+    Right -> undefined
+    Back -> lastPos

@@ -1,6 +1,11 @@
+import System.Random ()
 module Types where
 
 type Position = Int
+
+type GameState = (PlayerState, WumpusState, EnvironmentState, gen, GameStatus)
+
+data GameStatus = Ongoing | GameOver String deriving (Show, Eq)
 
 -- if move is an enum then it forces the game to have
 --    # of enums amount of connections per cave
@@ -9,7 +14,7 @@ type Position = Int
 --    or move names which are incorrect (e.i. moving left when in that position you can only move right)
 -- For a decahedron it Left Right Back make sense for every move as you will always have those options
 --    if orientated correctly
-data Move = Left | Right | Back
+data Move = Left | Right | Back deriving (Show, Eq)
 
 data PlayerState = Player
   { playerPosition :: Position,
@@ -17,18 +22,18 @@ data PlayerState = Player
     --    to orientate player
     lastPosition :: Position,
     playerArrowCount :: Int,
-    playerHasShot :: Boolean
-  }
+    playerHasShot :: Bool
+  } deriving (Show, Eq)
 
 data WumpusState = WumpusState
   { wumpusPosition :: Position
-  }
+  } deriving (Show, Eq)
 
 data EnvironmentState = EnvironmentState
   { hazards :: [(Position, Hazard)]
-  }
+  } deriving (Show, Eq)
 
-data Hazard = Bats | Pit
+data Hazard = Bats | Pit deriving (Show, Eq)
 
 type CaveLayout = [(Position, [Position])]
 
@@ -57,13 +62,3 @@ decahedron =
     (20, [13, 16, 19])
   ]
 
--- CaveLayout -> Current Position -> Last Position -> Move -> Position
-move :: CaveLayout -> Position -> Position -> Move -> Position
--- Example of how last position is helpful:
--- let current position be 1
--- let last position be 2
--- let 1's mapLayout entry be (1, [2, 5, 8]),
--- Move Back -> obviously return 2
--- Move Left -> move left of 2 (cyclically if out of bounds) return 8
--- Move Right -> move right of 2 return 5
-move _ _ _ = undefined

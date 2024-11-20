@@ -32,29 +32,32 @@ data Hazard = Bats | Pit
 
 type CaveLayout = [(Position, [Position])]
 
+makeCircular :: (Ord a, Int a) => [a] -> [a]
+makeCircular = fix $ ++
+
 -- Map Layout:
 decahedron :: CaveLayout
-decahedron =
-  [ (1, [2, 5, 8]),
-    (2, [1, 3, 10]),
-    (3, [2, 4, 12]),
-    (4, [3, 5, 14]),
-    (5, [1, 4, 6]),
-    (6, [5, 7, 15]),
-    (7, [6, 8, 17]),
-    (8, [1, 7, 9]),
-    (9, [8, 10, 18]),
-    (10, [2, 9, 11]),
-    (11, [10, 12, 20]),
-    (12, [3, 11, 13]),
-    (13, [12, 14, 20]),
-    (14, [4, 13, 15]),
-    (15, [6, 14, 16]),
-    (16, [15, 17, 20]),
-    (17, [7, 16, 18]),
-    (18, [9, 17, 19]),
-    (19, [11, 18, 20]),
-    (20, [13, 16, 19])
+decahedron = -- [Left, Right, Back]
+  [ (1, makeCircular [2, 5, 8]),
+    (2, makeCircular [3, 1, 10]),
+    (3, makeCircular [4, 2, 12]),
+    (4, makeCircular [5, 3, 14]),
+    (5, makeCircular [1, 4, 6]),
+    (6, makeCircular [7, 15, 5]),
+    (7, makeCircular [8, 6, 17]),
+    (8, makeCircular [9, 7, 1]),
+    (9, makeCircular [10, 8, 18]),
+    (10, makeCircular [11, 9, 2]),
+    (11, makeCircular [12, 10, 19]),
+    (12, makeCircular [13, 11, 3]),
+    (13, makeCircular [14, 12, 20]),
+    (14, makeCircular [15, 13, 4]),
+    (15, makeCircular [6, 14, 10]),
+    (16, makeCircular [17, 20, 15]),
+    (17, makeCircular [18, 16, 7]),
+    (18, makeCircular [19, 17, 9]),
+    (19, makeCircular [20, 18, 11]),
+    (20, makeCircular [16, 19, 13])
   ]
 
 -- CaveLayout -> Current Position -> Last Position -> Move -> Position

@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - mtl >= 2.2.2
 - random >= 1.2
+- random-shuffle >= 0.0.4
 
 ghc-options:
 - -Wall

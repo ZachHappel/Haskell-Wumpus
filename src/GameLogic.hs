@@ -1,6 +1,7 @@
 import Types
 import Data.List(elemIndex)
 import Data.Maybe (fromMaybe)
+import System.Random.Shuffle
 -- CaveLayout -> Current Position -> Last Position -> Move -> Position
 move :: CaveLayout -> Position -> Position -> Move -> Position
 -- Example of how last postion is helpful:
@@ -48,5 +49,13 @@ decahedron = [[1, 4, 7],   -- 0
 moveInDecahedron :: MoveInMap
 moveInDecahedron = move decahedron
 
+data StartGameState = StartGameState
+  { playerCurrentPosition :: Position,
+    -- will have to be set to the correct position on game start
+    --    to orientate player
+    playerLastPostion :: Position,
+    playerArrowCount :: Int,
+    caveLayout :: CaveLayout
+  }
 
-createStartState :: CaveLayout -> G
+createStartState :: StartGameState -> 

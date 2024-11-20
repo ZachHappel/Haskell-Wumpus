@@ -2,6 +2,7 @@ import Types
 import Data.List(elemIndex)
 import Data.Maybe (fromMaybe)
 import System.Random.Shuffle
+import System.Random
 -- CaveLayout -> Current Position -> Last Position -> Move -> Position
 move :: CaveLayout -> Position -> Position -> Move -> Position
 -- Example of how last postion is helpful:
@@ -55,7 +56,32 @@ data StartGameState = StartGameState
     --    to orientate player
     playerLastPostion :: Position,
     playerArrowCount :: Int,
-    caveLayout :: CaveLayout
+    caveLayout :: CaveLayout,
+    numberOfBats :: Int,
+    numberOfPits :: Int,
+    startRandomGen :: StdGen
   }
 
-createStartState :: StartGameState -> 
+createStartState :: StartGameState -> GameState
+createStartState startGameState = GameState
+    { 
+        playerState = PlayerState { 
+            currentPosition = playerCurrentPosition startGameState,
+            lastPosition = playerLastPostion startGameState,
+            arrowCount = playerLastPostion startGameState
+        },
+      wumpusState = WumpusState { wumpusPosition = wumpusPos },
+      environmentState = EnvironmentState { hazards = envHazards },
+      randomGen = nextGen
+    }
+    where 
+        indices = [0..(length (caveLayout startGameState))]
+        (num, onceGen) = next (startRandomGen startGameState)
+        (stateGen, nextGen) = split onceGen
+        shuffledIndices = shuffle' indices num stateGen
+        (wumpusPos:restIndices) = shuffledIndices
+        hazards = replicate (numberOfBats startGameState) Bats 
+            ++ replicate (numberOfBats startGameState) Pit
+        envHazards = zip restIndices hazards
+
+

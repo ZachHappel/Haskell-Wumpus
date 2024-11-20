@@ -1,4 +1,5 @@
 module Types where
+import System.Random
 
 type Position = Int
 
@@ -17,7 +18,7 @@ data PlayerState = PlayerState
   { currentPosition :: Position,
     -- will have to be set to the correct position on game start
     --    to orientate player
-    lastPostion :: Position,
+    lastPosition :: Position,
     arrowCount :: Int
   }
 
@@ -32,7 +33,8 @@ data EnvironmentState = EnvironmentState
 data GameState = GameState
     { playerState :: PlayerState,
       wumpusState :: WumpusState,
-      environmentState :: EnvironmentState
+      environmentState :: EnvironmentState,
+      randomGen :: StdGen
     }
 
 

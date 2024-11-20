@@ -1,5 +1,8 @@
 module Main where
+
+import Data.Char (toLower)
 import Data.List (break)
+
 -- import Lib
 -- import GameLogic (Action, GameState, gameLoop, initialState, isGameOver) TODO: Example parameters for gameLogic function
 
@@ -14,35 +17,34 @@ gameLoopIO state = do
   -- TODO: You're in cave #n
   putStrLn "Enter move"
   input <- getLine
-  case parseInput input of {} -- cases for what to do when the input is valid
-    Just action -> do -- in the case the action is valid
+  case parseInput input of -- cases for what to do when the input is valid
+    Just action -> do
+      -- in the case the action is valid
       let newState = applyAction state action -- create the new game state with the curr state and action
       if isGameOver newState -- if this resulting game state exists and results in a death
         then putStrLn "Game over"
         else gameLoopIO newState -- else, continue game loop
-    Nothing -> do -- in the case the action is invalid
+    Nothing -> do
+      -- in the case the action is invalid
       putStrLn "Invalid action"
       gameLoopIO state -- continue the game loop re-asking "Enter move"
 
 parseInput :: String -> Maybe Action
 parseInput input =
-  let (cmd, dir) = map $ toLower (break isSpace input)
-  case (cmd, dir) of
-    ("move", dir) -> case dir of
-      "left" -> -- TODO: move left
-      "right" -> -- TODO: move right
-      "back" -> -- TODO: move backwards
-      _ -> Nothing
-    ("shoot", path) -> case path of
-      -- TODO: build out shooting I/O
-      _ -> Nothing
-    ("smell") -> -- TODO: return sniffing action
-    ("feel") -> -- TODO: return feeling action
-    ("listen") -> -- TODO: return listening action
-    _ -> Nothing
-  where
-    isSpace = do
-      -- TODO: Get all chars before space
+  let (cmd, dir) = break (== ' ') input -- command, direction
+    (command, direction) = $ map toLower cmd, dropWhile (== ' ') (map toLower rest)
+   in case command of
+        "move" -> case direction of
+          "left" -> Just Move left -- TODO: move left
+          "right" -> Just Move right -- TODO: move right
+          "back" -> Just Move back -- TODO: move backwards
+          _ -> Nothing
+        "shoot" -> Just ShootPath direction -- TODO: shoot path
+        -- TODO: build out shooting I/O
+        "smell" -> Just Smell -- TODO: return sniffing action
+        "feel" -> Just Feel -- TODO: return feeling action
+        "listen" -> Just Listen -- TODO: return listening action
+        _ -> Nothing
 
 {-
 TODO:
@@ -50,6 +52,7 @@ TODO:
   - initialState: defines the init state of the game
   - applyAction: creates a modified game state with some action
   - isGameOver: bool, return if game is over or not
+  - ShootPath: takes in directions to shoot the arrow, fires an arrow in some direction
 -}
 
 {-

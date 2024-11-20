@@ -18,7 +18,7 @@
 
 ---
 
-## Member 2: Game Logic and Core Gameplay
+## Member 2: Game Logic and Core Gameplay (Luciano)
 
 - **Tasks**:
   1. Implement movement and interaction logic:

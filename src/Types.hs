@@ -3,8 +3,6 @@ module Types where
 
 type Position = Int
 
-type GameState = (PlayerState, WumpusState, EnvironmentState, gen, GameStatus)
-
 data GameStatus = Ongoing | GameOver String deriving (Show, Eq)
 
 -- if move is an enum then it forces the game to have
@@ -14,7 +12,15 @@ data GameStatus = Ongoing | GameOver String deriving (Show, Eq)
 --    or move names which are incorrect (e.i. moving left when in that position you can only move right)
 -- For a decahedron it Left Right Back make sense for every move as you will always have those options
 --    if orientated correctly
-data Move = Left | Right | Back deriving (Show, Eq)
+data Move = MoveLeft | MoveRight | MoveBack deriving (Show, Eq)
+
+data GameState = GameState
+  { playerState      :: PlayerState,
+    wumpusState      :: WumpusState,
+    environmentState :: EnvironmentState,
+    gen              :: StdGen,
+    gameStatus       :: GameStatus
+  } deriving (Show, Eq)
 
 data PlayerState = Player
   { playerPosition :: Position,

@@ -11,7 +11,9 @@ type Position = Int
 --    if orientated correctly
 data Move = Left | Right | Back deriving(Show)
 
-data Sense = Hear | Feel | Smell
+data Sense = Hear | Feel | Smell deriving(Show)
+
+data Choice = ChoiceMove | ChoiceSense | ChoiceShoot deriving(Show)
 
 data PlayerState = PlayerState
   { currentPosition :: Position,

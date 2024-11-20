@@ -1,4 +1,5 @@
 import System.Random ()
+import Data.List (lookup)
 import Types
 
 someFunc :: IO ()
@@ -8,6 +9,27 @@ type GameState = (PlayerState, WumpusState, EnvironmentState, gen)
 
 f :: CaveLayout -> GameState -> GameState
 f = undefined
+
+-- Take in players current state, current GameState, and generate a new GameState
+setState :: PlayerState -> GameState -> GameState
+setState player gameState = 
+  let
+    -- How player states would be accessed
+    currentPos = playerPosition player
+    lastPos = lastPostion player
+    arrowShot = playerHasShot player
+
+    -- How game states would be accessed
+    hazardsList = hazards (environmentState gameState)
+    wumpusPos = wumpusPosition (wumpusState gameState)
+    
+    -- Check for hazards at the current position
+    hazard = lookup currentPos hazardsList
+
+    -- Check if player has encountered the Wumpus
+    wumpusEncounter = currentPos == wumpusPos
+
+
 move :: CaveLayout -> Position -> Position -> Move -> Position
 move layout currentPosition lastPosition moveType =
   case lookup currentPosition layout of

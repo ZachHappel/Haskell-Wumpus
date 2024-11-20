@@ -9,7 +9,7 @@ type Position = Int
 --    or move names which are incorrect (e.i. moving left when in that postion you can only move right)
 -- For a decahedron it Left Right Back make sense for every move as you will always have those options
 --    if orientated correctly
-data Move = Left | Right | Back
+data Move = Left | Right | Back deriving(Show)
 
 data PlayerState = Player
   { playerPosition :: Position,

@@ -11,12 +11,14 @@ type Position = Int
 --    if orientated correctly
 data Move = Left | Right | Back deriving(Show)
 
-data PlayerState = Player
-  { playerPosition :: Position,
+data Sense = Hear | Feel | Smell
+
+data PlayerState = PlayerState
+  { currentPosition :: Position,
     -- will have to be set to the correct position on game start
     --    to orientate player
     lastPostion :: Position,
-    playerArrowCount :: Int
+    arrowCount :: Int
   }
 
 data WumpusState = WumpusState
@@ -26,6 +28,14 @@ data WumpusState = WumpusState
 data EnvironmentState = EnvironmentState
   { hazards :: [(Position, Hazard)]
   }
+
+data GameState = GameState
+    { playerState :: PlayerState,
+      wumpusState :: WumpusState,
+      environmentState :: EnvironmentState
+    }
+
+
 
 data Hazard = Bats | Pit
 

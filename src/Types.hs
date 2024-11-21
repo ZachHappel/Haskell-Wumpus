@@ -37,6 +37,18 @@ data GameState = GameState
     layout      :: CaveLayout
   } deriving (Show)
 
+type RoomId = Int
+
+data RoomFeature = Wumpus | Bat | Breeze | Empty
+  deriving (Show, Eq)
+
+data Room = Room
+  { roomId      :: RoomId
+  , roomFeature :: RoomFeature
+  } deriving (Show, Eq)
+
+
+
 
 data Hazard = Bats | Pit deriving (Show)
 

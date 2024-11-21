@@ -2,8 +2,8 @@ module Main where
 
 import Data.Char (toLower)
 import Data.List (break)
-
--- import Lib
+import Types ()
+import Lib ()
 -- import GameLogic (Action, GameState, gameLoop, initialState, isGameOver) TODO: Example parameters for gameLogic function
 
 main :: IO ()

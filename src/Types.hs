@@ -1,5 +1,6 @@
-import System.Random ()
 module Types where
+
+import System.Random ()
 
 type Position = Int
 

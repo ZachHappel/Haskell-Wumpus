@@ -32,6 +32,34 @@ assignFeatures layout = do
 
 
 
+assignRandomFeatures :: [RoomId] -> IO [(RoomId, RoomFeature)]
+assignRandomFeatures roomIds = do
+      wumpusRoom <- randomPick roomIds
+      batRooms <- randomPicks roomIds [wumpusRoom] 2
+      pitRooms <- randomPicks roomIds (wumpusRoom : batRooms) 2
+      let hazards = [(wumpusRoom, Wumpus)]
+                    ++ [(r, Bat) | r <- batRooms]
+                    ++ [(r, Breeze) | r <- pitRooms]
+      return hazards
+
+randomPick :: [RoomId] -> IO RoomId
+randomPick roomIds = do
+  index <- randomRIO (0, length roomIds - 1)
+  return (roomIds !! index)
+
+randomPicks :: [RoomId] -> [RoomId] -> Int -> IO [RoomId]
+randomPicks roomIds exclude n = do
+  let available = filter (`notElem` exclude) roomIds
+  if n > length available
+    then error "Not enough available rooms for selection!"
+    else do
+      picked <- mapM (const $ randomPick available) [1 .. n]
+      return picked
+
+
+
+
+
 --heckWum
 pus :: GameState -> Bool
 

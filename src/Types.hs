@@ -1,4 +1,13 @@
-module Types where
+module Types (
+  PlayerState(..),
+  EnvironmentState,
+  Move,
+  Hazard(..),
+  CaveLayout,
+  Position,
+  wumpusPosition,
+  WumpusState(..)
+) where
 
 type Position = Int
 
@@ -11,32 +20,23 @@ type Position = Int
 --    if orientated correctly
 data Move = Left | Right | Back
 
-data GameState = GameState
-  {
-    playerPosition :: Position,
-    lastPostion :: Position,
-    playerArrowCount :: Int
-    wumpusPosition :: Position
-    hazards :: [(Position, Hazard)]
-  }
+data PlayerState = PlayerState {
+  playerPosition :: Position,
+  lastPosition :: Position,
+  playerArrowCount :: Int
+} deriving Show
 
-data PlayerState = Player
-  { playerPosition :: Position,
-    -- will have to be set to the correct position on game start
-    --    to orientate player
-    lastPostion :: Position,
-    playerArrowCount :: Int
-  }
-
-data WumpusState = WumpusState
-  { wumpusPosition :: Position
-  }
+data WumpusState = WumpusState {
+  wumpusPosition :: Position
+} deriving Show
 
 data EnvironmentState = EnvironmentState
   { hazards :: [(Position, Hazard)]
   }
+  
 
-data Hazard = Bats | Pit
+
+data Hazard = Bats | Pit deriving Show
 
 type CaveLayout = [(Position, [Position])]
 
@@ -74,8 +74,4 @@ move :: CaveLayout -> Position -> Position -> Move -> Position
 -- Move Back -> obivously return 2
 -- Move Left -> move left of 2 (cyclically if out of bounds) return 8
 -- Move Right -> move right of 2 return 5
-move layout currPos lastPos dir = 
-  case dir of
-    Left -> undefined
-    Right -> undefined
-    Back -> lastPos
+move = undefined

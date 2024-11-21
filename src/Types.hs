@@ -1,6 +1,6 @@
-module Types where
+module Types (module Types) where
 
-import System.Random ()
+import System.Random (StdGen)
 
 type Position = Int
 
@@ -44,12 +44,13 @@ data Hazard = Bats | Pit deriving (Show, Eq)
 
 type CaveLayout = [(Position, [Position])]
 
-makeCircular :: (Ord a, Int a) => [a] -> [a]
-makeCircular = fix $ ++
+--makeCircular :: (Ord a, Int a) => [a] -> [a]
+--makeCircular = fix $ ++
 
 -- Map Layout:
-decahedron :: CaveLayout
-decahedron = -- [Left, Right, Back]
+--decahedron :: CaveLayout
+--decahedron = -- [Left, Right, Back]
+{-  
   [ (1, makeCircular [2, 5, 8]),
     (2, makeCircular [3, 1, 10]),
     (3, makeCircular [4, 2, 12]),
@@ -71,4 +72,4 @@ decahedron = -- [Left, Right, Back]
     (19, makeCircular [20, 18, 11]),
     (20, makeCircular [16, 19, 13])
   ]
-
+ -}

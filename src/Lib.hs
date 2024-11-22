@@ -15,13 +15,29 @@ import Types
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
 
--- Small cave to test with
+-- Old Dodecahedron map to test with
 testCaveLayout :: CaveLayout
 testCaveLayout =
-  [ (1, [2, 3, 4]),  -- Position 1 connects to 2, 3, 4
-    (2, [1, 3, 4]),  -- Position 2 connects to 1, 3, 4
-    (3, [1, 2, 4]),  -- Position 3 connects to 1, 2, 4
-    (4, [1, 2, 3])   -- Position 4 connects to 1, 2, 3
+  [ (1,  [2, 5, 8]),
+    (2,  [1, 3, 10]),
+    (3,  [2, 4, 12]),
+    (4,  [3, 5, 14]),
+    (5,  [1, 4, 6]),
+    (6,  [5, 7, 15]),
+    (7,  [6, 8, 17]),
+    (8,  [1, 7, 9]),
+    (9,  [8, 10, 18]),
+    (10, [2, 9, 11]),
+    (11, [10, 12, 19]),
+    (12, [3, 11, 13]),
+    (13, [12, 14, 20]),
+    (14, [4, 13, 15]),
+    (15, [6, 14, 16]),
+    (16, [15, 17, 20]),
+    (17, [7, 16, 18]),
+    (18, [9, 17, 19]),
+    (19, [11, 18, 20]),
+    (20, [13, 16, 19])
   ]
 
 -- Used for bats transporting player to a random cave
@@ -39,8 +55,8 @@ move layout currentPosition previousPosition moveType =
     Just connections ->
       case moveType of
         MoveBack -> previousPosition
-        MoveLeft  -> cyclicMove connections lastIndex (-1)
-        MoveRight -> cyclicMove connections lastIndex 1
+        MoveLeft  -> cyclicMove connections lastIndex 1
+        MoveRight -> cyclicMove connections lastIndex (-1)
       where
         -- Index of the last position in the connections list
         lastIndex = case elemIndex previousPosition connections of

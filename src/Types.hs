@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
 module Types (module Types) where
 
 import System.Random (StdGen)
@@ -15,6 +17,8 @@ data GameStatus = Ongoing | GameOver String deriving (Show, Eq)
 --    if orientated correctly
 data Move = MoveLeft | MoveRight | MoveBack deriving (Show, Eq)
 
+data Action = MoveAction Move | ShootAction [Position] deriving (Show, Eq)
+
 data GameState = GameState
   { playerState      :: PlayerState,
     wumpusState      :: WumpusState,
@@ -23,10 +27,9 @@ data GameState = GameState
     gameStatus       :: GameStatus
   } deriving (Show, Eq)
 
+-- will have to be set to the correct position on game start to orientate player
 data PlayerState = Player
   { playerPosition :: Position,
-    -- will have to be set to the correct position on game start
-    --    to orientate player
     lastPosition :: Position,
     playerArrowCount :: Int,
     playerHasShot :: Bool

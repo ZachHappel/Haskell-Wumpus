@@ -1,9 +1,12 @@
 module Lib
-  ( 
+  (
     someFunc,
+    selectRandomElement,
     getRandomPosition,
     move,
     setState,
+    handleMovement,
+    handleShooting,
     testCaveLayout
   ) where
 
@@ -40,15 +43,8 @@ testCaveLayout =
     (20, [13, 16, 19])
   ]
 
--- Used for bats transporting player to a random cave
-getRandomPosition :: Random.StdGen -> CaveLayout -> (Position, Random.StdGen)
-getRandomPosition genValue cave =
-  let allPositions = map fst cave
-      (idx, newStdGen) = Random.randomR (0, length allPositions - 1) genValue :: (Int, Random.StdGen)
-      newPos = allPositions !! idx
-  in (newPos, newStdGen)
-
--- Moves the player, calls setState after every move
+-- Moves the player, in main this would be called before setState
+-- CaveLayout, currentPosition, previousPosition, noveDirection, new position
 move :: CaveLayout -> Position -> Position -> Move -> Position
 move layout currentPosition previousPosition moveType =
   case lookup currentPosition layout of
@@ -70,9 +66,22 @@ move layout currentPosition previousPosition moveType =
           in conns !! newIdx
     Nothing -> error "Invalid position in cave layout"
 
--- Function to set a new game state after the player moves
-setState :: PlayerState -> Move -> GameState -> GameState
-setState player moveDir gameState =
+
+-- Function that modifies the state of the game depending on the players actions
+setState :: PlayerState -> Action -> GameState -> GameState
+setState player action gameState =
+  case action of
+    MoveAction moveDir ->
+      -- Existing movement logic
+      handleMovement player moveDir gameState
+    ShootAction path ->
+      -- Shooting logic
+      handleShooting player path gameState
+
+-- Function to handle movement of player
+-- Take in current player state, action they performed, curent game state, and gives new game state
+handleMovement :: PlayerState -> Move -> GameState -> GameState
+handleMovement player moveDir gameState =
   let
     -- Extract fields from GameState
     wumpus = wumpusState gameState
@@ -90,7 +99,7 @@ setState player moveDir gameState =
     newPos = move testCaveLayout currentPos lastPos moveDir
 
     -- Update PlayerState
-    updatedPlayer = player { 
+    updatedPlayer = player {
       lastPosition = currentPos,
       playerPosition = newPos,
       playerHasShot = False     -- Reset shot status everytime the player moves
@@ -107,7 +116,7 @@ setState player moveDir gameState =
       Just Bats ->
         -- Transport player to a random position
         let (randPos, newStdGen) = getRandomPosition genVal testCaveLayout
-            transportedPlayer = updatedPlayer { 
+            transportedPlayer = updatedPlayer {
               playerPosition = randPos,
               lastPosition = newPos
             }
@@ -142,13 +151,96 @@ setState player moveDir gameState =
     finalGameStatus = finalStatus
   in
     -- Return the updated GameState
-    gameState { 
+    gameState {
       playerState = finalPlayer,
       wumpusState = finalWumpus,
       gen = finalGen,
       gameStatus = finalGameStatus
     }
-      
---x = do
---  msg <- GameState
---  putStrLn msg
+
+handleShooting :: PlayerState -> [Position] -> GameState -> GameState
+handleShooting player path gameState =
+  let
+    genVal = gen gameState
+    wumpus = wumpusState gameState
+    wumpusPos = wumpusPosition wumpus
+    remainingArrows = playerArrowCount player - 1
+
+    -- Check if the player has arrows left
+    gameStatus' = if remainingArrows < 0
+                  then GameOver "You have no arrows left!"
+                  else gameStatus gameState
+
+    -- Check if the arrow path exceeds the maximum length
+    gameStatus'' = if length path > 5
+                   then GameOver "Your arrow cannot travel more than 5 caves!"
+                   else gameStatus'
+
+    -- Validate the arrow path
+    isValidPath = validateArrowPath (playerPosition player) path
+
+    -- Update game status if path is invalid
+    gameStatus''' = if not isValidPath
+                    then GameOver "Invalid arrow path!"
+                    else gameStatus''
+
+    -- Determine if the arrow hits the Wumpus
+    arrowHitsWumpus = wumpusPos `elem` path
+
+    -- Update game status if the Wumpus is hit
+    finalGameStatus = if arrowHitsWumpus
+                      then GameOver "You have killed the Wumpus! You win!"
+                      else gameStatus'''
+
+    -- If the arrow misses and the game is ongoing, the Wumpus may move
+    (updatedWumpusState, finalGen) = if not arrowHitsWumpus && finalGameStatus == Ongoing
+                                     then moveWumpusRandomly wumpus genVal
+                                     else (wumpus, genVal)
+
+    -- Update the player's arrow count
+    updatedPlayer = player { playerArrowCount = remainingArrows, playerHasShot = True }
+
+  in
+    gameState {
+      playerState = updatedPlayer,
+      wumpusState = updatedWumpusState,
+      gen = finalGen,
+      gameStatus = finalGameStatus
+    }
+
+validateArrowPath :: Position -> [Position] -> Bool
+validateArrowPath _ [] = True  -- Empty path is valid
+validateArrowPath currentPos (nextPos:rest) =
+  case lookup currentPos testCaveLayout of
+    Just connections ->
+      (nextPos `elem` connections) && validateArrowPath nextPos rest
+    Nothing -> False  -- Current position not found in the cave layout
+
+
+-- Helper function that generates a random position, used for Bats and Wumpus moving
+selectRandomElement :: Random.StdGen -> [a] -> (a, Random.StdGen)
+selectRandomElement genValue list =
+  let
+    (idx, newStdGen) = Random.randomR (0, length list - 1) genValue
+    element = list !! idx
+  in
+    (element, newStdGen)
+
+-- Used for bats transporting player to a random cave
+getRandomPosition :: Random.StdGen -> CaveLayout -> (Position, Random.StdGen)
+getRandomPosition genValue cave =
+  let
+    allPositions = map fst cave
+    (newPos, newStdGen) = selectRandomElement genValue allPositions
+  in
+    (newPos, newStdGen)
+
+moveWumpusRandomly :: WumpusState -> Random.StdGen -> (WumpusState, Random.StdGen)
+moveWumpusRandomly currentWumpusState genValue =
+  let
+    wumpusPos = wumpusPosition currentWumpusState
+    connections = fromMaybe [] (lookup wumpusPos testCaveLayout)
+    (newWumpusPos, newGen) = selectRandomElement genValue connections
+    updatedWumpus = currentWumpusState { wumpusPosition = newWumpusPos }
+  in
+    (updatedWumpus, newGen)

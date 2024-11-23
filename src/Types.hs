@@ -47,6 +47,47 @@ data Hazard = Bats | Pit deriving (Show, Eq)
 
 type CaveLayout = [(Position, [Position])]
 
+
+data Sense = SmellWumpus | HearBats | FeelDraft deriving (Show, Eq)
+
+-- Generate sense data for the entire cave layout
+generateSenseData :: CaveLayout -> GameState -> [(Position, [Sense])]
+generateSenseData layout gameState =
+  map (\(pos, neighbors) -> (pos, sensesForCave pos neighbors)) layout
+  where
+    sensesForCave :: Position -> [Position] -> [Sense]
+    sensesForCave pos neighbors =
+      let
+        wumpusPos = wumpusPosition $ wumpusState gameState
+        hazardMap = hazards $ environmentState gameState
+        hazardAt n = lookup n hazardMap
+      in
+        concatMap (senseForNeighbor pos) neighbors ++ wumpusSense pos neighbors wumpusPos
+
+    senseForNeighbor :: Position -> Position -> [Sense]
+    senseForNeighbor current neighbor =
+      case lookup neighbor (hazards $ environmentState gameState) of
+        Just Bats -> [HearBats]
+        Just Pit  -> [FeelDraft]
+        Nothing   -> []
+
+    wumpusSense :: Position -> [Position] -> Position -> [Sense]
+    wumpusSense current neighbors wumpusPos
+      | wumpusPos == current = []  -- Wumpus is in the same cave; player will see it
+      | wumpusPos `elem` neighbors = [SmellWumpus]
+      | otherwise = []
+
+displaySenses :: Position -> [(Position, [Sense])] -> IO ()
+displaySenses current senses =
+  case lookup current senses of
+    Just senseList -> mapM_ (putStrLn . describeSense) senseList
+    Nothing -> return ()
+
+describeSense :: Sense -> String
+describeSense SmellWumpus = "You smell something foul nearby."
+describeSense HearBats    = "You hear the flapping of wings."
+describeSense FeelDraft   = "You feel a draft nearby."
+
 --makeCircular :: (Ord a, Int a) => [a] -> [a]
 --makeCircular = fix $ ++
 

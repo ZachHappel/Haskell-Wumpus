@@ -16,19 +16,17 @@ senseRoom room =
 
 
 
+-- user says "shoot" then which direction, then get gamestate to see where wumpus is, then return True/False if wumpus dies
+--shootArrow :: String -> String-> GameState -> Bool
+--shootArrow = 
 
-assignFeatures :: CaveLayout -> IO [Room]
-assignFeatures layout = do
-  let roomIds = map fst layout
-  wumpusRoom <- randomPick roomIds
-  batRooms <- randomPicks roomIds [wumpusRoom] 2
-  breezeRooms <- randomPicks roomIds (wumpusRoom : batRooms) 2
 
-  let features = [(rid, Wumpus) | rid <- [wumpusRoom]] ++
-                 [(rid, Bat) | rid <- batRooms] ++
-                 [(rid, Breeze) | rid <- breezeRooms]
-      rooms = map (\rid -> Room rid (lookupFeature rid features)) roomIds
-  return rooms
+
+
+
+
+
+
 
 
 
@@ -61,7 +59,7 @@ randomPicks roomIds exclude n = do
 
 
 --heckWum
-pus :: GameState -> Bool
+--pus :: GameState -> Bool
 
 
 

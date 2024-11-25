@@ -35,9 +35,6 @@ gameLoop game = do
   gameLoop updatedGame
     -- call gameLoop again, but now with the updated state
 
---execState runs computation and extracts updated state after computation is applied.
-
-
 -- takes a Move, which it gets from gameLoops I/O and translates that into meaningful input
 movePlayer :: Move -> State GameState ()
 movePlayer direction = do

@@ -108,7 +108,7 @@ getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex 
 -- it does this by dropping up until the index of the first occurrence and returns the three init indices
 
 -- returns list of senses, calculating what is smelled and heard in adjacent rooms
-getSenses :: [Position] -> [Sense]
+--getSenses :: [Position] -> [Sense]
 
 
 
@@ -156,34 +156,3 @@ caveArt = unlines
 
 
 
-{-
--- CaveLayout -> Current Position -> Last Position -> Move -> Position
-move :: CaveLayout -> Position -> Position -> Move -> Position
--- Example of how last postion is helpful:
--- let current position be 1
--- let last position be 2
--- let 1's mapLayout entry be (1, [2, 5, 8]),
--- Move Back -> obivously return 2
--- Move Left -> move left of 2 (cyclically if out of bounds) return 8
--- Move Right -> move right of 2 return 5
-
--- move _ _ _ _ = undefined
--- move layout current last Back = last
--- move layout current last Right = 
--- move layout current last Left = 
-
--- neighbors list comprehension returns ns, retrieved from layout's (position, [positions]) tuple
--- where pos == (value passed as `current`), as per the predicate 
-
--- also, neighbors uses `head` bc the list comprehension returns [[Position]] 
--- `head` allows us to retrieve the [Position]
-
-
-move layout current last direction =
-  let neighbors = head [ns | (pos, ns) <- layout, pos == current]
-  in case direction of
-       Back  -> last -- Value passed to the function
-       Left  -> neighbors !! 0  -- Where first elem is left
-       Right -> neighbors !! 1  -- Where secon elem is right
-       Forward -> neighbors !! 2 -- Where third elem is forward
--}

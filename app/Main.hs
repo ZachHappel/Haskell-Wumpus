@@ -31,6 +31,7 @@ gameLoop game = do
 
   move <- getLine
   let parsedMove = case move of
+    -- shoot, smell, feel, listen. How do we get info about gameState. 
         "Left"  -> Types.Left
         "Right" -> Types.Right
         "Back"  -> Types.Back

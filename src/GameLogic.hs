@@ -76,12 +76,14 @@ createStartState startGameState = GameState
     }
     where 
         indices = [0..(length (caveLayout startGameState))]
-        (num, onceGen) = next (startRandomGen startGameState)
+        (num, onceGen) = uniform (startRandomGen startGameState)
         (stateGen, nextGen) = split onceGen
         shuffledIndices = shuffle' indices num stateGen
         (wumpusPos:restIndices) = shuffledIndices
-        hazards = replicate (numberOfBats startGameState) Bats 
+        hazardsList = replicate (numberOfBats startGameState) Bats 
             ++ replicate (numberOfBats startGameState) Pit
-        envHazards = zip restIndices hazards
+        envHazards = zip restIndices hazardsList
 
-
+-- main goal is to check for hazard / wumpus
+onEnterNewRoom :: GameState -> GameState
+onEnterNewRoom gameState = gameState case of

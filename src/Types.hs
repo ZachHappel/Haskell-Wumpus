@@ -13,6 +13,8 @@ type Current = Position
 --    if orientated correctly
 data Move = Left | Right | Back deriving (Show)
 
+data Sense = Smell | Hear deriving (Show)
+
 data PlayerState = Player
   { playerPosition :: Position,
     -- will have to be set to the correct position on game start
@@ -92,6 +94,13 @@ getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex 
 -- takes index of the first occurrence of the player's "last position"
 -- returns three indices with the last position being the first, followed by the right and the left
 -- it does this by dropping up until the index of the first occurrence and returns the three init indices
+
+-- returns list of senses, calculating what is smelled and heard in adjacent rooms
+getSenses :: [Position] -> [Sense]
+
+
+
+
 
 
 

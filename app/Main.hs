@@ -24,7 +24,11 @@ gameLoop game = do
     -- game is passed into the function as an argument
   putStrLn caveArt
   print $ "Current Player State: " ++ show (playerState game)
-  putStrLn "Enter your move (Left, Right, Back):"
+  putStrLn "Enter your move (Left, Right, Back):\n "
+
+  -- option to Shoot arrow? 
+
+
   move <- getLine
   let parsedMove = case move of
         "Left"  -> Types.Left
@@ -47,6 +51,10 @@ movePlayer direction = do
       gameLayout = layout game -- resolve issue with reuse of `layout`
       neighbors = getNeighbors current gameLayout
       adjustedNeighbors = getOrientationAdjustedNeighbors current prev gameLayout
+
+      -- get Senses 
+      
+
       newPosition = case direction of
         Types.Back  -> adjustedNeighbors !! 0
         Types.Left  -> adjustedNeighbors !! 2

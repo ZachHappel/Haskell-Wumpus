@@ -92,3 +92,5 @@ choiceToGame choice = case choice of
     "3" -> Just Types.ChoiceShoot
     _   -> Nothing
 
+-- if the arrow ends up in the room with the wumpus, it kills the wumpus 
+-- otherwise the wumpus gets scared and moves rooms (it cannot be killed)

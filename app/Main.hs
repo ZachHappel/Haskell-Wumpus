@@ -23,12 +23,15 @@ gameLoop :: GameState -> IO ()
 gameLoop game = do
     -- game is passed into the function as an argument
   putStrLn caveArt
-  print $ "Current Player State: " ++ show (playerState game)
-  putStrLn "Enter your move (Left, Right, Back):\n "
-
+  --putStrLn $ formatPlayerState (playerState game)
+  putStrLn menuHeader
+  putStrLn $ formatPlayerStateBetter (playerState game)
+  putStrLn menuBody
   -- option to Shoot arrow? 
 
 
+
+  --putStrLn "\n(Action Menu)\nTo Move, Type:\nLeft, Right, Back\n\nFor Other Actions, Type:\nSmell, Hear, Shoot\nEnter Choice:"
   move <- getLine
   let parsedMove = case move of
     -- shoot, smell, feel, listen. How do we get info about gameState. 
@@ -61,3 +64,20 @@ movePlayer direction = do
   -- update the game state with the new player state
   put $ game { playerState = updatedPlayer }
     -- returns the orginal game state with the updated values? 
+
+
+{-
+
+  putStrLn "Choose your action (Move, Sense, Shoot):\n "
+  action <- getLine
+  let parsedAction = case action of
+    -- shoot, smell, feel, listen. How do we get info about gameState. 
+        "Move"  -> Types.Left
+        "Sense" -> Types.Right
+        "Shoot"  -> Types.Back
+        _       -> error "Invalid action"
+  
+
+
+
+-}

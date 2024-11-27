@@ -23,6 +23,28 @@ data PlayerState = Player
     playerArrowCount :: Int
   } deriving (Show)
 
+
+formatPlayerState :: PlayerState -> String
+formatPlayerState (Player current last arrows) =
+  "--------------------------------\n" ++ 
+  "Current Cave: " ++ show current ++ "\n" ++
+  "   Last Cave: " ++ show last ++ "\n\n" ++
+  "--------------\n" ++
+  "      Arrows: " ++ show arrows ++ "\n" ++
+  "--------------------------------"
+
+formatPlayerStateBetter :: PlayerState -> String
+formatPlayerStateBetter (Player current last arrows) =
+  "                     ________________ |" ++ "\n" ++
+  "                    | Status : " ++ "\n" ++
+  "                    |--------       " ++ "\n" ++
+  "                    | Current Cave: " ++ show current ++ "\n" ++
+  "                    |    Last Cave: " ++ show last ++ "\n" ++
+  "                    |           --  " ++ "\n" ++
+  "                    |      Arrows:  " ++ show arrows ++ "\n" ++
+  "                    |________________ "
+
+
 data WumpusState = WumpusState
   { wumpusPosition :: Position
   } deriving (Show)
@@ -113,8 +135,34 @@ getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex 
 
 
 
+menuHeader :: String
+menuHeader = unlines
+  [
+    "--------------------------------------",
+    "               Menu Options           |",
+    "                                      |",
+    "                                      |"
+  ]
 
 
+menuBody :: String
+menuBody = unlines
+  [
+    "\n\n   Actions:                     ",
+    "     - Smell                    ",
+    "     - Listen                   ",
+    "     - Shoot Left               ",
+    "     - Shoot Right               ",
+    "",
+    "",
+    "   Movement:",
+    "     - Left",
+    "     - Right",
+    "",
+    "",
+    "--------------------------------------",
+    "Enter Option: "
+  ]
 
 caveArt :: String
 caveArt = unlines

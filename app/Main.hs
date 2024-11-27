@@ -24,11 +24,23 @@ gameLoop game = do
     -- game is passed into the function as an argument
   putStrLn caveArt
   print $ "Current Player State: " ++ show (playerState game)
+  putStrLn "Enter Action:   Move, Sense, Shoot\n"
   putStrLn "Enter your move (Left, Right, Back):\n "
 
   -- option to Shoot arrow? 
 
+  move <- getLine
+  let parsedMove = case move of
+        "Left"  -> Types.Left
+        "Right" -> Types.Right
+        "Back"  -> Types.Back
+        
+        _       -> error "Invalid move"
+      updatedGame = execState (movePlayer parsedMove) game
+  gameLoop updatedGame
 
+  {-
+  putStrLn "Enter your move (Left, Right, Back):\n "
   move <- getLine
   let parsedMove = case move of
         "Left"  -> Types.Left
@@ -36,7 +48,7 @@ gameLoop game = do
         "Back"  -> Types.Back
         _       -> error "Invalid move"
       updatedGame = execState (movePlayer parsedMove) game
-  gameLoop updatedGame
+  -}
     -- call gameLoop again, but now with the updated state
 
 --execState runs computation and extracts updated state after computation is applied.

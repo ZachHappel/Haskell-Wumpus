@@ -11,9 +11,12 @@ type Current = Position
 --    or move names which are incorrect (e.i. moving left when in that postion you can only move right)
 -- For a decahedron it Left Right Back make sense for every move as you will always have those options
 --    if orientated correctly
+
+data Input = Action String | Movement Move deriving (Show)
+
 data Move = Left | Right | Back deriving (Show)
 
-data Sense = Smell | Hear deriving (Show)
+data Sense = Smell | Listen deriving (Show)
 
 data PlayerState = Player
   { playerPosition :: Position,
@@ -22,6 +25,9 @@ data PlayerState = Player
     lastPostion :: Position,
     playerArrowCount :: Int
   } deriving (Show)
+
+
+--getSmell :: [Position] -> 
 
 
 formatPlayerState :: PlayerState -> String
@@ -152,7 +158,7 @@ menuBody = unlines
     "     - Smell                    ",
     "     - Listen                   ",
     "     - Shoot Left               ",
-    "     - Shoot Right               ",
+    "     - Shoot Right               ",    
     "",
     "",
     "   Movement:",

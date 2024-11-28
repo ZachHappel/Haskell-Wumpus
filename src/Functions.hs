@@ -21,11 +21,18 @@ senseRoom room =
 --shootArrow = 
 
 
+smell :: GameState -> String
+smell game = "It smells"
 
 
-
-
-
+listen :: GameState -> String
+listen game = "You hear something"
+{-
+smell :: GameState -> String
+smell game = 
+  let playerPos = playerPosition $ playerState game
+      nearbyHazards = [hazard | (pos, hazard) <- hazards (environment game), ]
+-}
 
 
 

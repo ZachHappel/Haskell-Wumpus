@@ -1,6 +1,6 @@
 # Hunt the Wumpus
 
-_A collaborative implementation of Hunt the Wumpus in Haskell._
+_Haskell Implementation of the Classic TI-99/4A Game: Hunt the Wumpus_
 
 ## Overview
 
@@ -13,9 +13,8 @@ The Wumpus is unique within the cave network, but there are two instances each o
 2. Upon entering a cave containing a colony of super-bats, a swarm of bats picks up the hunter and drops her in a random cave. (Note that being dropped in a cave with another threat results the outcome associated with that threat.)
 3. Upon entering a cave containing the sleeping Wumpus, the beast is startled and either (a) consumes the hunter whole, resulting in death, or (b) (a) flees to an adjacent cave.
 
-Your instructor first encountered this game in a class on artificial intelligence while studying as a master's student in computer science. In that setting, the hunter is described as an "agent" possessing three senses for perceiving his otherwise completely dark cavern environment:
+The hunter is described as an "agent" possessing three senses for perceiving his otherwise completely dark cavern environment:
 1. _Smell_ - The Wumpus itself exudes a foul stench that can be detected from nearby (i.e. connected) cave.
-2. _Touch_ - Feeling a cool breeze indicates that a bottomless pit is nearby.
-3. _Hearing_ - When a colony of super-bats is nearby, the faint sound of fluttering can be heard.
+2. _Listen_ - When a colony of super-bats is nearby, the faint sound of fluttering can be heard. Also, feeling a cool breeze indicates that a bottomless pit is nearby.
 
 For more information about _Hunt the Wumpus_, please refer to the [Wikipedia article about the game](https://en.wikipedia.org/wiki/Hunt_the_Wumpus).

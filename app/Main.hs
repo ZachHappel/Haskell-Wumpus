@@ -5,15 +5,19 @@ import Types
 import Functions
 
 import Control.Monad.State
-
+import Data.Bool (not)
+import System.Random (randomRIO)
 
 main :: IO ()
 main = do
     -- Define the initial game state
+  putStrLn caveArt
+  let caveRooms = [1..20]
+  environment <- randomizeEnvironment caveRooms
+
   let initialState = GameState
         { playerState = Player 1 2 3, -- at pos 1, prev is 2, 3 arrows
-          wumpusState = WumpusState 5, -- set wumpus pos @ 5 for now
-          environment = EnvironmentState [], -- currently no hazards
+          environment = environment,
           layout = decahedron -- cave layout
         }
 
@@ -23,7 +27,7 @@ main = do
 gameLoop :: GameState -> IO ()
 gameLoop game = do
     -- game is passed into the function as an argument
-  putStrLn caveArt
+  
   --putStrLn $ formatPlayerState (playerState game)
   putStrLn menuHeader
   putStrLn $ formatPlayerStateBetter (playerState game)
@@ -46,7 +50,7 @@ gameLoop game = do
 
   case parsedInput of
     Just (Movement move) -> do
-      let updatedGame = execState (movePlayer move) game
+      updatedGame <- execStateT (movePlayer move) game
       gameLoop updatedGame
     Just (Action "Smell") -> do
       putStrLn $ smell game
@@ -67,7 +71,7 @@ gameLoop game = do
 
 
 
-movePlayer :: Move -> State GameState ()
+movePlayer :: Move -> StateT GameState IO ()
 movePlayer direction = do
   -- access current game state
   game <- get
@@ -90,17 +94,46 @@ movePlayer direction = do
 
       -}
       gameLayout = layout game -- resolve issue with reuse of `layout`
+      
       neighbors = getNeighbors current gameLayout
       adjustedNeighbors = getOrientationAdjustedNeighbors current prev gameLayout
-
-      -- get Senses 
       
-
       newPosition = case direction of
         Types.Back  -> adjustedNeighbors !! 0
         Types.Left  -> adjustedNeighbors !! 2
         Types.Right -> adjustedNeighbors !! 1
-      updatedPlayer = Player newPosition current arrows
+      
+      env = environment game
+      isWumpus                  = newPosition == wumpusLocation env
+      --wumpusWouldAttack         = randomRIO (False, True)
+      --wumpusAttacked            = isWumpus && wumpusWouldAttack
+      --wumpusRanAway             = isWumpus && not wumpusAttacked
+      isBat                     = newPosition `elem` batsLocations env -- If players new pos is same as cave with bats
+      isPit                     = newPosition `elem` pitsLocations env -- If players new pos is same as cave with pit
+
+      --updatedPlayer = Player newPosition current arrows
+
+  wumpusWouldAttack <- liftIO $ randomRIO (False, True)
+  let wumpusAttacked = isWumpus && wumpusWouldAttack
+      wumpusRanAway  = isWumpus && not wumpusAttacked
+
+  when wumpusAttacked  $ liftIO $ putStrLn "You encountered the Wumpus and it attacked! GG no re"
+  when wumpusRanAway  $ liftIO $ putStrLn "WOAH! That was the WUMPUS! It ran away!"
+  when isPit          $ liftIO $ putStrLn "You fell into a pit and died."
+  when isBat          $ liftIO $ putStrLn "Bats! You have now been carried to a random cave."
+  
+  {-
+  let finalPlayer = 
+        if isBat
+          then updatedPlayer {playerPosition = randomRIO(1,20)}
+          else updatedPlayer
+  -}
+  
+  finalPosition <- if isBat
+                   then liftIO $ randomRIO (1, 20)
+                   else return newPosition
+  let updatedPlayer = Player finalPosition current arrows
+
   -- update the game state with the new player state
   put $ game { playerState = updatedPlayer }
     -- returns the orginal game state with the updated values? 

@@ -27,43 +27,21 @@ data PlayerState = Player
   } deriving (Show)
 
 
---getSmell :: [Position] -> 
-
-
-formatPlayerState :: PlayerState -> String
-formatPlayerState (Player current last arrows) =
-  "--------------------------------\n" ++ 
-  "Current Cave: " ++ show current ++ "\n" ++
-  "   Last Cave: " ++ show last ++ "\n\n" ++
-  "--------------\n" ++
-  "      Arrows: " ++ show arrows ++ "\n" ++
-  "--------------------------------"
-
-formatPlayerStateBetter :: PlayerState -> String
-formatPlayerStateBetter (Player current last arrows) =
-  "                     ________________ |" ++ "\n" ++
-  "                    | Status : " ++ "\n" ++
-  "                    |--------       " ++ "\n" ++
-  "                    | Current Cave: " ++ show current ++ "\n" ++
-  "                    |    Last Cave: " ++ show last ++ "\n" ++
-  "                    |           --  " ++ "\n" ++
-  "                    |      Arrows:  " ++ show arrows ++ "\n" ++
-  "                    |________________ "
-
-
 data WumpusState = WumpusState
   { wumpusPosition :: Position
   } deriving (Show)
 
-data EnvironmentState = EnvironmentState
-  { hazards :: [(Position, Hazard)]
-  } deriving (Show)
 
+data EnvironmentState = EnvironmentState
+  {
+    wumpusLocation :: Position,
+    batsLocations :: [Position],
+    pitsLocations :: [Position]
+  } deriving (Show)
 
 data GameState = GameState
   { playerState :: PlayerState,
-    wumpusState :: WumpusState,
-    environment :: EnvironmentState,
+    environment :: EnvironmentState, -- Includes wumpusLocation, batsLocation, pitsLocation
     layout      :: CaveLayout
   } deriving (Show)
 
@@ -85,6 +63,7 @@ data Hazard = Bats | Pit deriving (Show)
 type CaveLayout = [(Position, [Position])] 
 
 -- Map Layout:
+-- Orientation: Back, Right, Left (, Back, Right, Left)
 decahedron :: CaveLayout
 decahedron =
   [ (1, [2, 5, 8, 2, 5, 8]),
@@ -107,12 +86,17 @@ decahedron =
     (18, [9, 17, 19, 9, 17, 19]),
     (19, [11, 18, 20, 11, 18, 20]),
     (20, [13, 19, 16, 13, 16, 19]) -- originally wrong
-  ]
+  ] 
 
 
 
 getNeighbors :: Position -> CaveLayout -> [Position]
-getNeighbors current_position l = head [neighbors | (pos, neighbors) <- l, pos == current_position]
+--getNeighbors current_position l = head [neighbors | (pos, neighbors) <- l, pos == current_position]
+getNeighbors current_position l =
+  case [neighbors | (pos, neighbors) <- l, pos == current_position] of
+    (neighbors:_) -> neighbors -- Found neighbors
+    [] -> error $ "No neighbors found for position: " ++ show current_position -- Added this because tyring to troubleshoot error
+
 
 findIndexOf :: Eq a => a -> [a] -> Position
 findIndexOf x xs = go xs 0
@@ -139,6 +123,25 @@ getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex 
 --getSenses :: [Position] -> [Sense]
 
 
+formatPlayerState :: PlayerState -> String
+formatPlayerState (Player current last arrows) =
+  "--------------------------------\n" ++ 
+  "Current Cave: " ++ show current ++ "\n" ++
+  "   Last Cave: " ++ show last ++ "\n\n" ++
+  "--------------\n" ++
+  "      Arrows: " ++ show arrows ++ "\n" ++
+  "--------------------------------"
+
+formatPlayerStateBetter :: PlayerState -> String
+formatPlayerStateBetter (Player current last arrows) =
+  "                     ________________ |" ++ "\n" ++
+  "                    | Status : " ++ "\n" ++
+  "                    |--------       " ++ "\n" ++
+  "                    | Current Cave: " ++ show current ++ "\n" ++
+  "                    |    Last Cave: " ++ show last ++ "\n" ++
+  "                    |           --  " ++ "\n" ++
+  "                    |      Arrows:  " ++ show arrows ++ "\n" ++
+  "                    |________________ "
 
 
 menuHeader :: String

@@ -4,13 +4,6 @@ type Position = Int
 type Previous = Position
 type Current = Position
 
--- if move is an enum then it forces the game to have
---    # of enums amount of connections per cave
---    a more generic way of representing moves could be
---    used but it may result it move names which are bland (e.i. to room 3)
---    or move names which are incorrect (e.i. moving left when in that postion you can only move right)
--- For a decahedron it Left Right Back make sense for every move as you will always have those options
---    if orientated correctly
 
 data Input = Action String | Movement Move deriving (Show)
 
@@ -62,6 +55,8 @@ data Hazard = Bats | Pit deriving (Show)
 
 type CaveLayout = [(Position, [Position])] 
 
+beforeOutputLine :: String
+beforeOutputLine = "beforeOutputLine"
 -- Map Layout:
 -- Orientation: Back, Right, Left (, Back, Right, Left)
 decahedron :: CaveLayout
@@ -166,6 +161,44 @@ menuBody = unlines
     "Enter Option: "
   ]
 
+
+headsUpDisplay :: [Position] -> String
+headsUpDisplay (adjustedNeighbors) =
+  "--------------------------------------"++ "\n\n" ++
+    " Minimap: "++ "\n" ++
+    ""++ "\n" ++
+    "    Left       Right  "++ "\n" ++
+    "     ("++ show (adjustedNeighbors!!2) ++")        ("++ show (adjustedNeighbors!!1) ++")  "++ "\n" ++
+    ""++ "\n" ++
+    "   -[[]]-     -[[]]- " ++ "\n" ++
+    "  [[    ]]   [|    |] " ++ "\n" ++
+    "  [|    |]   [|    |] " ++ "\n" ++
+    "  \\\\    \\\\  //    //" ++ "\n" ++
+    "    \\\\   \\\\//   // " ++ "\n" ++
+    "      \\   \\/   /  " ++ "\n" ++
+    ""++ "\n" ++
+    "         Back"++ "\n" ++
+    "         ("++ show (adjustedNeighbors!!0) ++ ")"++ "\n"
+
+menuBodyImproved :: [Position]  -> String
+menuBodyImproved (adjustedNeighbors) = 
+    "\n\n   Actions:                     "++ "\n" ++
+    "     - Smell                    "++ "\n" ++
+    "     - Listen                   "++ "\n" ++
+    "     - Shoot Left               "++ "\n" ++
+    "     - Shoot Right               "++ "\n" ++  
+    ""++ "\n" ++
+    ""++ "\n" ++
+    "   Movement:"++ "\n" ++
+    "     - Back     (to Cave "++ show (adjustedNeighbors!!0) ++ ")\n" ++
+    "     - Left     (to Cave "++ show (adjustedNeighbors!!2) ++ ")\n" ++
+    "     - Right    (to Cave "++ show (adjustedNeighbors!!1) ++ ")\n" ++
+    ""++ "\n" ++
+    ""++ "\n" ++
+   "--------------------------------------"++ "\n\n" ++
+    "Enter Option: "
+  
+
 caveArt :: String
 caveArt = unlines
   [
@@ -203,17 +236,3 @@ caveArt = unlines
   ,"#%%@@@%%@@@@==+**#########*+++++++****##@@@@@#####**%###**********###@@@@@@@@"
   ,"*##%%@@@@@#+++++*##%%*+++**+**+++++++++**#%#*#####*#**##*#*#*****###%@@@@@@@@"
   ]
-
-
-
-{-
-
-formatPlayerState :: PlayerState -> String
-formatPlayerState (Player current last arrows) =
-  "--------------------------------\n" ++ 
-  "Current Cave: " ++ show current ++ "\n" ++
-  "   Last Cave: " ++ show last ++ "\n\n" ++
-  "--------------\n" ++
-  "      Arrows: " ++ show arrows ++ "\n" ++
-  "--------------------------------"
-  -}

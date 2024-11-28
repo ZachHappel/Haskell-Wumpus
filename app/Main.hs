@@ -8,39 +8,54 @@ import Control.Monad.State
 import Data.Bool (not)
 import System.Random (randomRIO)
 import System.Exit (exitFailure)
+import System.IO
 
 
 main :: IO ()
 main = do
+  hSetEncoding stdout utf8
+
     -- Define the initial game state
   putStrLn caveArt
   let caveRooms = [1..20]
   environment <- randomizeEnvironment caveRooms
 
   let initialState = GameState
-        { playerState = Player 1 2 3, -- at pos 1, prev is 2, 3 arrows
+        { playerState = Player 1 2 3, -- Position 1, Previous is 2, 3 Arrows
           environment = environment,
-          layout = decahedron -- cave layout
+          layout = decahedron
         }
 
   gameLoop initialState
-    -- passes initialState to gameLoop and starts the loop
+
 
 gameLoop :: GameState -> IO ()
 gameLoop game = do
-    -- game is passed into the function as an argument
-  
-  let pitPositions = pitsLocations $ environment game
-  putStrLn $ "[DEBUG] Pit Positions: " ++ show pitPositions
 
-  --putStrLn $ formatPlayerState (playerState game)
+  -- DOING THIS HERE (BEFORE OTHER LOOP) SO THAT I CAN PROVIDE INFORMATION TO THE MENU
+  let player@(Player c p a) = playerState game
+      adjustedNeighbors = getOrientationAdjustedNeighbors c p (layout game)
+  
+  {- UNCOMMENT TO DEBUG
+  let pitPositions = pitsLocations $ environment game
+  putStrLn $ "[DEBUG] Pits Positions: " ++ show pitPositions
+
+  let batPositions = batsLocations $ environment game
+  putStrLn $ "[DEBUG] Bats Positions: " ++ show batPositions
+
+  let wumpusPosition = wumpusLocation $ environment game
+  putStrLn $ "[DEBUG] Wumpus Positions: " ++ show wumpusPosition
+
+  let player@(Player c p a) = playerState game
+      adjustedNeighbors = getOrientationAdjustedNeighbors c p (layout game)
+  putStrLn $ "[DEBUG] Orientation Adjusted Neighbors: " ++ show adjustedNeighbors
+  -}
+    
+  putStrLn $ headsUpDisplay (adjustedNeighbors) -- remember why we need the `$` here
   putStrLn menuHeader
   putStrLn $ formatPlayerState (playerState game)
-  putStrLn menuBody
-  -- option to Shoot arrow? 
-
-
-
+  putStrLn $ menuBodyImproved (adjustedNeighbors) -- remember why we need the `$` here
+  
   input <- getLine
   let parsedInput = case input of
         "Left"  -> Just $ Movement Types.Left
@@ -82,17 +97,11 @@ gameLoop game = do
     Nothing -> do
       putStrLn "Invalid input. Try again."
       gameLoop game         
-  --gameLoop updatedGame
-      --updatedGame = execState (movePlayer parsedMove) game
--- takes a Move, which it gets from gameLoops I/O and translates that into meaningful input
-
-
 
 
 movePlayer :: Move -> StateT GameState IO ()
 movePlayer direction = do
-  -- access current game state
-  game <- get
+  game <- get -- access current game state
   let player@(Player current prev arrows) = playerState game
       {-
         `playerState game` retrieves/extracts playerState from the GameState, `game`
@@ -108,19 +117,14 @@ movePlayer direction = do
         This is not copying, or creating a new variable in the sense of duplicating memory,
           This is a `name binding` which refers to the entire value of `playerState game`
           `player` refers back directly to the original value
-        
-
       -}
-      gameLayout = layout game -- resolve issue with reuse of `layout`
-      
+      gameLayout = layout game -- resolves issue with reuse of `layout`
       neighbors = getNeighbors current gameLayout
       adjustedNeighbors = getOrientationAdjustedNeighbors current prev gameLayout
-      
       newPosition = case direction of
         Types.Back  -> adjustedNeighbors !! 0
         Types.Left  -> adjustedNeighbors !! 2
         Types.Right -> adjustedNeighbors !! 1
-      
       env = environment game
       isWumpus                  = newPosition == wumpusLocation env
       --wumpusWouldAttack         = randomRIO (False, True)
@@ -128,7 +132,6 @@ movePlayer direction = do
       --wumpusRanAway             = isWumpus && not wumpusAttacked
       isBat                     = newPosition `elem` batsLocations env -- If players new pos is same as cave with bats
       isPit                     = newPosition `elem` pitsLocations env -- If players new pos is same as cave with pit
-
       --updatedPlayer = Player newPosition current arrows
 
   wumpusWouldAttack <- liftIO $ randomRIO (False, True)
@@ -158,17 +161,13 @@ movePlayer direction = do
   when isBat          $ liftIO $ putStrLn "Bats! You have now been carried to a random cave."
   -}
 
-  {-
-  let finalPlayer = 
-        if isBat
-          then updatedPlayer {playerPosition = randomRIO(1,20)}
-          else updatedPlayer
-  -}
   
   finalPosition <- if isBat
                    then liftIO $ randomRIO (1, 20)
                    else return newPosition
-  let newPrevPosition = head [back | (pos, back:_) <- decahedron, pos == finalPosition]
+  let newPrevPosition = if isBat
+                        then head [back | (pos, back:_) <- decahedron, pos == finalPosition]
+                        else current
       updatedPlayer = Player finalPosition newPrevPosition arrows
       {- 
         This should fix issue where when a player gets dropped in a new cave, 
@@ -179,39 +178,9 @@ movePlayer direction = do
         It takes the dodecahedron and matches pos with the new final position
         it then extracts the list of neighbors via `back:_`
         and then it returns the `back` which was found
+
+        UPDATE: It did fix the issue.
       -}
 
-  -- update the game state with the new player state
   put $ game { playerState = updatedPlayer }
-    -- returns the orginal game state with the updated values? 
 
-
-
-{-
-
-  putStrLn "Choose your action (Move, Sense, Shoot):\n "
-  action <- getLine
-  let parsedAction = case action of
-    -- shoot, smell, feel, listen. How do we get info about gameState. 
-        "Move"  -> Types.Left
-        "Sense" -> Types.Right
-        "Shoot"  -> Types.Back
-        _       -> error "Invalid action"
-  
-
-
-
--}
-
-
-{- Original move input parsing
-
-let parsedMove = case move of
-    -- shoot, smell, feel, listen. How do we get info about gameState. 
-        "Left"  -> Types.Left
-        "Right" -> Types.Right
-        "Back"  -> Types.Back
-        _       -> error "Invalid move"
-      updatedGame = execState (movePlayer parsedMove) game
-  gameLoop updatedGame
--}

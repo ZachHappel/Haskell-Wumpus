@@ -4,12 +4,7 @@ import Types
 import Data.Maybe (mapMaybe)
 import System.Random (randomRIO)
 import Control.Monad.State
---movePlayer :: GameState -> String -> GameState
 
-
--- user says "shoot" then which direction, then get gamestate to see where wumpus is, then return True/False if wumpus dies
---shootArrow :: String -> String-> GameState -> Bool
---shootArrow = 
 
 
 smell :: GameState -> String
@@ -34,7 +29,7 @@ listen game =
         ["whirring wind" | pitSounds]
   in if null sounds
       then "You hear nothing unusual."
-      else "You hear: " ++ unwords sounds
+      else "You hear the " ++ unwords sounds
 
 
 
@@ -73,18 +68,6 @@ shoot direction = do
             put $ game {playerState = updatedPlayer}
             return ("You missed! With only " ++ show arrowsLeft ++ " arrows left, I'd recommend you be extra careful... You never what lies waiting for you around the next corne--")
   
-  {-
-    in if targetCave == wumpusLocation env
-       then "You killed the Wumpus! You win!"
-       else "You missed! The Wumpus is still alive."
-  -}
-
-{-
-smell :: GameState -> String
-smell game = 
-  let playerPos = playerPosition $ playerState game
-      nearbyHazards = [hazard | (pos, hazard) <- hazards (environment game), ]
--}
 
 
 -- Rewrote randomizer/random so that it more easily integrates with the data and type definitions we already have
@@ -103,7 +86,7 @@ randomizeEnvironment roomIds = do
 
 randomPick :: [Position] -> IO Position
 randomPick roomIds = do
-  index <- randomRIO (0, length roomIds - 1)
+  index <- randomRIO (1, length roomIds - 1)
   return (roomIds !! index)
 
 
@@ -112,7 +95,7 @@ randomPicks roomIds exclude n = do
   let available = filter (`notElem` exclude) roomIds
   if n > length available
     then error "Somehow not enough rooms"
-    else mapM (const $ randomPick available) [1..n] -- what does mapM and const do here again? 
+    else mapM (const $ randomPick available) [1..n] -- recall what mapM and const are used for when 
 
 
 

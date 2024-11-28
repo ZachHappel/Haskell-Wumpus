@@ -3,7 +3,7 @@ import Types
 
 import Data.Maybe (mapMaybe)
 import System.Random (randomRIO)
-
+import Control.Monad.State
 --movePlayer :: GameState -> String -> GameState
 
 
@@ -38,8 +38,9 @@ listen game =
 
 
 
-shoot :: String -> GameState -> String
-shoot direction game =
+shoot :: String -> StateT GameState IO String
+shoot direction = do 
+  game <- get -- access current game state
   let playerPos = playerPosition $ playerState game
       env       = environment game
       gameLayout    = layout game -- needed to call it gameLayout to get beyond naming conflict
@@ -50,9 +51,33 @@ shoot direction game =
         "Right" -> neighbors !! 1
         "Left"  -> neighbors !! 2
         _       -> error "Invalid direction"
-  in if targetCave == wumpusLocation env
+      arrowsLeft = playerArrowCount $ playerState game  -- get arrrows from playerState
+      wumpusNearby = wumpusLocation env `elem` neighbors -- check if wumpus is in neighboring cave, otherwise why would it run
+  if arrowsLeft <= 0
+    then return "You're out of arrows! Better find your way back out!" -- Would be cool to let player win by going back to cave 1
+    else do
+      -- updatedPlayer with new arrow amount
+      let updatedPlayer = (playerState game) {playerArrowCount = arrowsLeft - 1} 
+          updatedGame = game {playerState = updatedPlayer}
+      put updatedGame
+    
+      if targetCave == wumpusLocation env
+        then return "You killed the Wumpus! You win!"
+        else if wumpusNearby
+          then do
+            newWumpusPos <- liftIO $ randomRIO (1, 20) -- need to lift into StateT monad bc doesn't support IO inherently
+            let updatedEnv = env {wumpusLocation = newWumpusPos}
+            put $ game { playerState = updatedPlayer, environment = updatedEnv }
+            return "You missed! The Wumpus has scurried away in fear!"
+          else do
+            put $ game {playerState = updatedPlayer}
+            return ("You missed! With only " ++ show arrowsLeft ++ " arrows left, I'd recommend you be extra careful... You never what lies waiting for you around the next corne--")
+  
+  {-
+    in if targetCave == wumpusLocation env
        then "You killed the Wumpus! You win!"
        else "You missed! The Wumpus is still alive."
+  -}
 
 {-
 smell :: GameState -> String

@@ -7,6 +7,8 @@ import Functions
 import Control.Monad.State
 import Data.Bool (not)
 import System.Random (randomRIO)
+import System.Exit (exitFailure)
+
 
 main :: IO ()
 main = do
@@ -28,9 +30,12 @@ gameLoop :: GameState -> IO ()
 gameLoop game = do
     -- game is passed into the function as an argument
   
+  let pitPositions = pitsLocations $ environment game
+  putStrLn $ "[DEBUG] Pit Positions: " ++ show pitPositions
+
   --putStrLn $ formatPlayerState (playerState game)
   putStrLn menuHeader
-  putStrLn $ formatPlayerStateBetter (playerState game)
+  putStrLn $ formatPlayerState (playerState game)
   putStrLn menuBody
   -- option to Shoot arrow? 
 
@@ -58,6 +63,19 @@ gameLoop game = do
     Just (Action "Listen") -> do
       putStrLn $ listen game
       gameLoop game
+    Just (Action "Shoot Left") -> do
+      --let result = shoot "Left" game
+      result <- evalStateT (shoot "Left") game -- above was pure function implementation, but that doesn't work since it operates in our StateT GameState IO monad
+      putStrLn result
+      if result == "You killed the Wumpus! You win!"
+        then putStrLn "Game Over. Thanks for playing."
+        else gameLoop game
+    Just (Action "Shoot Right") -> do
+      result <- evalStateT (shoot "Right") game
+      putStrLn result
+      if result == "You killed the Wumpus! You win!"
+        then putStrLn "Game Over. Thanks for playing."
+        else gameLoop game
     Just (Action action) -> do
       putStrLn $ "Unknown action: " ++ action
       gameLoop game
@@ -117,11 +135,29 @@ movePlayer direction = do
   let wumpusAttacked = isWumpus && wumpusWouldAttack
       wumpusRanAway  = isWumpus && not wumpusAttacked
 
+  when wumpusAttacked $ liftIO $ do 
+    putStrLn "You encountered the Wumpus and it attacked! GG no re"
+    exitFailure
+
+  when wumpusRanAway $ do 
+    liftIO $ putStrLn "WOAH! That was the WUMPUS! It ran away!"
+    newWumpusPosition <- liftIO $ randomRIO (1, 20)
+    let updatedEnvironment = env { wumpusLocation = newWumpusPosition }
+    put $ game {environment = updatedEnvironment}
+
+  when isBat $ liftIO $ putStrLn "Bats! You have now been carried to a random cave."
+  
+  when isPit $ liftIO $ do
+    putStrLn "You fell into a pit and died."
+    exitFailure
+ 
+  {-
   when wumpusAttacked  $ liftIO $ putStrLn "You encountered the Wumpus and it attacked! GG no re"
   when wumpusRanAway  $ liftIO $ putStrLn "WOAH! That was the WUMPUS! It ran away!"
   when isPit          $ liftIO $ putStrLn "You fell into a pit and died."
   when isBat          $ liftIO $ putStrLn "Bats! You have now been carried to a random cave."
-  
+  -}
+
   {-
   let finalPlayer = 
         if isBat
@@ -132,7 +168,18 @@ movePlayer direction = do
   finalPosition <- if isBat
                    then liftIO $ randomRIO (1, 20)
                    else return newPosition
-  let updatedPlayer = Player finalPosition current arrows
+  let newPrevPosition = head [back | (pos, back:_) <- decahedron, pos == finalPosition]
+      updatedPlayer = Player finalPosition newPrevPosition arrows
+      {- 
+        This should fix issue where when a player gets dropped in a new cave, 
+        the previous position was still corresponded to their location
+        prior to being flown away and placed in a random cave. 
+        
+        List comprehension explained: 
+        It takes the dodecahedron and matches pos with the new final position
+        it then extracts the list of neighbors via `back:_`
+        and then it returns the `back` which was found
+      -}
 
   -- update the game state with the new player state
   put $ game { playerState = updatedPlayer }

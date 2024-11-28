@@ -123,17 +123,9 @@ getOrientationAdjustedNeighbors current prev l = getThreeIndicesStartingAtIndex 
 --getSenses :: [Position] -> [Sense]
 
 
+
 formatPlayerState :: PlayerState -> String
 formatPlayerState (Player current last arrows) =
-  "--------------------------------\n" ++ 
-  "Current Cave: " ++ show current ++ "\n" ++
-  "   Last Cave: " ++ show last ++ "\n\n" ++
-  "--------------\n" ++
-  "      Arrows: " ++ show arrows ++ "\n" ++
-  "--------------------------------"
-
-formatPlayerStateBetter :: PlayerState -> String
-formatPlayerStateBetter (Player current last arrows) =
   "                     ________________ |" ++ "\n" ++
   "                    | Status : " ++ "\n" ++
   "                    |--------       " ++ "\n" ++
@@ -165,8 +157,9 @@ menuBody = unlines
     "",
     "",
     "   Movement:",
-    "     - Left",
+    "     - Back",
     "     - Right",
+    "     - Left",
     "",
     "",
     "--------------------------------------",
@@ -213,3 +206,14 @@ caveArt = unlines
 
 
 
+{-
+
+formatPlayerState :: PlayerState -> String
+formatPlayerState (Player current last arrows) =
+  "--------------------------------\n" ++ 
+  "Current Cave: " ++ show current ++ "\n" ++
+  "   Last Cave: " ++ show last ++ "\n\n" ++
+  "--------------\n" ++
+  "      Arrows: " ++ show arrows ++ "\n" ++
+  "--------------------------------"
+  -}
